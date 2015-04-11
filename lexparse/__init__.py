@@ -1,1 +1,2 @@
-__author__ = 'john'
+from .LXScriptLexer import LXScriptLexer
+from .LXScriptParser import LXScriptParser
