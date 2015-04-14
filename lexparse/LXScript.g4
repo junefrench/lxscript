@@ -2,33 +2,7 @@ grammar LXScript;
 
 // Lexer
 
-NUMBER
-    : [0-9]+
-    ;
-
-NAME
-    : [\w_]+
-    ;
-
-ID
-    : NAME NUMBER?
-    | NUMBER
-    ;
-
-// Sigils for different types of IDs
-BANG    : '!'; // Setting
-DOLLARS : '$'; // Sequence
-
-// Comments and whitespace
-POUND : '#';
-COMMENT
-    : POUND .*? ('\n' | EOF)
-    -> skip;
-WHITESPACE
-    : [ \t\r\n]+
-    -> skip;
-
-// Other tokens
+// Keywords and special characters
 LBRACE   : '{';
 RBRACE   : '}';
 LBRACKET : '[';
@@ -38,7 +12,32 @@ FULL     : 'full';
 AT       : '@';
 EQUALS   : '=';
 
+// Sigils for different types of IDs
+BANG    : '!'; // Setting
+DOLLARS : '$'; // Sequence
+
+NUMBER
+    : [0-9]+
+    ;
+
+NAME
+    : [A-Za-z_]+
+    ;
+
+// Comments and whitespace
+COMMENT
+    : '#' .*? ('\n' | EOF)
+    -> skip;
+WHITESPACE
+    : [ \t\r\n]+
+    -> skip;
+
 // Parser
+
+identifier
+    : NAME NUMBER?
+    | NUMBER
+    ;
 
 level
     : NUMBER
@@ -47,24 +46,24 @@ level
     ;
 
 system
-    : ID                    # system_reference
+    : identifier            # system_reference
     | AT AT NUMBER          # system_literal
     | LBRACE system+ RBRACE # system_compound
     ;
 
 setting
-    : BANG ID                # setting_reference
+    : BANG identifier        # setting_reference
     | system AT level        # setting_literal
     | LBRACE setting+ RBRACE # setting_compound
     ;
 
 sequence
-    : DOLLARS ID                 # sequence_reference
-    | LBRACKET setting+ RBRACKET # sequence_literal
+    : DOLLARS identifier                 # sequence_reference
+    | LBRACKET setting+ RBRACKET         # sequence_literal
     ;
 
 declaration
-    : ID EQUALS system           # system_declaration
-    | BANG ID EQUALS setting     # setting_declaration
-    | DOLLARS ID EQUALS sequence # sequence_declaration
+    : identifier EQUALS system           # system_declaration
+    | BANG identifier EQUALS setting     # setting_declaration
+    | DOLLARS identifier EQUALS sequence # sequence_declaration
     ;
