@@ -34,6 +34,16 @@ WHITESPACE
 
 // Parser
 
+lxscript
+    : (declaration | setting)+ EOF
+    ;
+
+declaration
+    : identifier EQUALS system           # declaration_system
+    | BANG identifier EQUALS setting     # declaration_setting
+    | DOLLARS identifier EQUALS sequence # declaration_sequence
+    ;
+
 identifier
     : NAME NUMBER?
     | NUMBER
@@ -60,10 +70,4 @@ setting
 sequence
     : DOLLARS identifier                 # sequence_reference
     | LBRACKET setting+ RBRACKET         # sequence_literal
-    ;
-
-declaration
-    : identifier EQUALS system           # system_declaration
-    | BANG identifier EQUALS setting     # setting_declaration
-    | DOLLARS identifier EQUALS sequence # sequence_declaration
     ;
