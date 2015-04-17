@@ -1,27 +1,37 @@
 import unittest
 
-from lexparse import LXScriptLexer
+
+def _rule(name):
+    from lexparse import LXScriptLexer
+
+    return LXScriptLexer.symbolicNames.index(name)
+
+
+def _name(rule):
+    from lexparse import LXScriptLexer
+
+    return LXScriptLexer.symbolicNames[rule]
 
 
 class LexerTest(unittest.TestCase):
     def test_number(self):
-        self._lex_expect("42", [(LXScriptLexer.NUMBER, '42')])
+        self._lex_expect("42", [('NUMBER', '42')])
 
     def test_name(self):
-        self._lex_expect("foo", [(LXScriptLexer.NAME, 'foo')])
+        self._lex_expect("foo", [('NAME', 'foo')])
 
     def test_symbols_and_keywords(self):
         self._lex_expect("!${}[] out full @=", [
-            LXScriptLexer.BANG,
-            LXScriptLexer.DOLLARS,
-            LXScriptLexer.LBRACE,
-            LXScriptLexer.RBRACE,
-            LXScriptLexer.LBRACKET,
-            LXScriptLexer.RBRACKET,
-            LXScriptLexer.OUT,
-            LXScriptLexer.FULL,
-            LXScriptLexer.AT,
-            LXScriptLexer.EQUALS,
+            'BANG',
+            'DOLLARS',
+            'LBRACE',
+            'RBRACE',
+            'LBRACKET',
+            'RBRACKET',
+            'OUT',
+            'FULL',
+            'AT',
+            'EQUALS',
         ])
 
     def test_comment(self):
@@ -29,20 +39,20 @@ class LexerTest(unittest.TestCase):
 
     def test_mix(self):
         self._lex_expect("led12 = {foo bar} #cool stuff\n!1 = led12 @ out", [
-            (LXScriptLexer.NAME, "led"),
-            (LXScriptLexer.NUMBER, "12"),
-            LXScriptLexer.EQUALS,
-            LXScriptLexer.LBRACE,
-            (LXScriptLexer.NAME, "foo"),
-            (LXScriptLexer.NAME, "bar"),
-            LXScriptLexer.RBRACE,
-            LXScriptLexer.BANG,
-            (LXScriptLexer.NUMBER, "1"),
-            LXScriptLexer.EQUALS,
-            (LXScriptLexer.NAME, "led"),
-            (LXScriptLexer.NUMBER, "12"),
-            LXScriptLexer.AT,
-            LXScriptLexer.OUT,
+            ('NAME', "led"),
+            ('NUMBER', "12"),
+            'EQUALS',
+            'LBRACE',
+            ('NAME', "foo"),
+            ('NAME', "bar"),
+            'RBRACE',
+            'BANG',
+            ('NUMBER', "1"),
+            'EQUALS',
+            ('NAME', "led"),
+            ('NUMBER', "12"),
+            'AT',
+            'OUT',
         ])
 
     def _lex_expect(self, code, expected_tokens):
@@ -54,9 +64,10 @@ class LexerTest(unittest.TestCase):
         :return: Does not return a value, but asserts that the output of the lexer matches the expected output.
         """
         from antlr4.InputStream import InputStream
+        from lexparse import LXScriptLexer
 
         lexer = LXScriptLexer(InputStream(code))
-        tokens = [(token.type, token.text) for token in lexer.getAllTokens()]
+        tokens = [(_name(token.type), token.text) for token in lexer.getAllTokens()]
         expected_tokens = [
             (expected[0], expected[1]) if type(expected) is tuple else (expected, None) for expected in expected_tokens
         ]
