@@ -1,12 +1,6 @@
 import unittest
 
 
-def _rule(name):
-    from lexparse import LXScriptLexer
-
-    return LXScriptLexer.symbolicNames.index(name)
-
-
 def _name(rule):
     from lexparse import LXScriptLexer
 

@@ -1,13 +1,9 @@
 import unittest
 
-from lexparse import LXScriptParser
-
-
-def _rule(name, symbolic=False):
-    return (LXScriptParser.symbolicNames if symbolic else LXScriptParser.ruleNames).index(name) + 1
-
 
 def _name(rule, symbolic=False):
+    from lexparse import LXScriptParser
+
     if symbolic and (rule == -1):
         return 'EOF'
     else:
