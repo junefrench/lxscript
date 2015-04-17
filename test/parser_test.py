@@ -48,6 +48,25 @@ class LexerTest(unittest.TestCase):
             ])
         )
 
+    def test_sequence_literal_declaration(self):
+        self._parse_expect(
+            "$1 = [!1 !2]",
+            ('lxscript', [
+                ('declaration', [
+                    'DOLLARS',
+                    ('identifier', ['NUMBER']),
+                    'EQUALS',
+                    ('sequence', [
+                        'LBRACKET',
+                        ('setting', ['BANG', ('identifier', ['NUMBER'])]),
+                        ('setting', ['BANG', ('identifier', ['NUMBER'])]),
+                        'RBRACKET'
+                    ])
+                ]),
+                'EOF'
+            ])
+        )
+
     def _parse_expect(self, code, expected_tree):
         from antlr4 import TerminalNode
         from antlr4.InputStream import InputStream
