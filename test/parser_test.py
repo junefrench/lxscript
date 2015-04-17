@@ -15,7 +15,7 @@ def _name(rule, symbolic=False):
 
 
 class LexerTest(unittest.TestCase):
-    def test_system_literal_declaration(self):
+    def test_system_literal_and_declaration(self):
         self._parse_expect(
             "1 = @@1",
             ('lxscript', [
@@ -28,7 +28,22 @@ class LexerTest(unittest.TestCase):
             ])
         )
 
-    def test_setting_literal_declaration(self):
+    def test_setting_literal_and_identifier(self):
+        self._parse_expect(
+            "foo1 @ 50",
+            ('lxscript', [
+                ('setting', [
+                    ('system', [
+                        ('identifier', ['NAME', 'NUMBER'])
+                    ]),
+                    'AT',
+                    ('level', ['NUMBER'])
+                ]),
+                'EOF'
+            ])
+        )
+
+    def test_setting_declaration(self):
         self._parse_expect(
             "!1 = 1 @ full",
             ('lxscript', [
@@ -48,7 +63,40 @@ class LexerTest(unittest.TestCase):
             ])
         )
 
-    def test_sequence_literal_declaration(self):
+    def test_compound_setting(self):
+        self._parse_expect(
+            """
+            {
+                1 @ full
+                foo @ out
+                bar42 @ 25
+            }
+            """,
+            ('lxscript', [
+                ('setting', [
+                    'LBRACE',
+                    ('setting', [
+                        ('system', [('identifier', ['NUMBER'])]),
+                        'AT',
+                        ('level', ['FULL'])
+                    ]),
+                    ('setting', [
+                        ('system', [('identifier', ['NAME'])]),
+                        'AT',
+                        ('level', ['OUT'])
+                    ]),
+                    ('setting', [
+                        ('system', [('identifier', ['NAME', 'NUMBER'])]),
+                        'AT',
+                        ('level', ['NUMBER'])
+                    ]),
+                    'RBRACE'
+                ]),
+                'EOF'
+            ])
+        )
+
+    def test_sequence_literal_and_declaration(self):
         self._parse_expect(
             "$1 = [!1 !2]",
             ('lxscript', [
@@ -68,6 +116,16 @@ class LexerTest(unittest.TestCase):
         )
 
     def _parse_expect(self, code, expected_tree):
+        """
+        Parse some code and check the resulting parse tree against the expected tree.
+        :param code: The string of code to parse.
+        :param expected_tree: The expected parse tree. A terminal node is simply written as a string (the name of the
+        lexer rule matched). A non-terminal node in the tree is written as a tuple (rule, [child ...]) where 'rule' is
+        the name of the parser rule represented by that node, and each child is either a string (for terminals) or
+        another tuple.
+        :return: Does not return a value, but asserts that the parse tree returned by parsing the given code matches the
+        one specified by expected_tree.
+        """
         from antlr4 import TerminalNode
         from antlr4.InputStream import InputStream
         from antlr4.CommonTokenStream import CommonTokenStream
@@ -77,6 +135,7 @@ class LexerTest(unittest.TestCase):
         parser = LXScriptParser(CommonTokenStream(lexer))
 
         def type_tree(parse_tree):
+            """Converts a parse tree to the format used to specify expected parse trees, as described above"""
             if isinstance(parse_tree, TerminalNode):
                 return _name(parse_tree.getSymbol().type, True)
             else:
