@@ -31,7 +31,7 @@ class LexerTest(unittest.TestCase):
             'OUT',
             'FULL',
             'AT',
-            'EQUALS',
+            'EQUALS'
         ])
 
     def test_comment(self):
@@ -52,7 +52,7 @@ class LexerTest(unittest.TestCase):
             ('NAME', "led"),
             ('NUMBER', "12"),
             'AT',
-            'OUT',
+            'OUT'
         ])
 
     def _lex_expect(self, code, expected_tokens):
@@ -65,18 +65,11 @@ class LexerTest(unittest.TestCase):
         """
         from antlr4.InputStream import InputStream
         from lexparse import LXScriptLexer
+        import itertools
 
         lexer = LXScriptLexer(InputStream(code))
-        tokens = [(_name(token.type), token.text) for token in lexer.getAllTokens()]
-        expected_tokens = [
-            (expected[0], expected[1]) if type(expected) is tuple else (expected, None) for expected in expected_tokens
+        actual_tokens = [
+            (_name(actual.type), actual.text) if type(expected) is tuple else _name(actual.type)
+            for expected, actual in itertools.zip_longest(expected_tokens, lexer.getAllTokens())
         ]
-        self.assertEqual(len(tokens), len(expected_tokens), msg="Wrong number of tokens produced")
-        for actual, expected in zip(tokens, expected_tokens):
-            msg = "Actual token {0} did not match expected token {1}".format(
-                repr(actual[1]),
-                repr(expected[1]) if expected[1] is not None else "(value not specified)"
-            )
-            self.assertEqual(actual[0], expected[0], msg=msg)
-            if expected[1] is not None:
-                self.assertEqual(actual[1], expected[1], msg=msg)
+        self.assertEqual(actual_tokens, expected_tokens)
