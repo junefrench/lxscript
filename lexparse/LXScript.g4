@@ -28,6 +28,7 @@ NAME
 COMMENT
     : '#' .*? ('\n' | EOF)
     -> skip;
+
 WHITESPACE
     : [ \t\r\n]+
     -> skip;
@@ -68,6 +69,6 @@ setting
     ;
 
 sequence
-    : DOLLARS identifier                 # sequence_reference
-    | LBRACKET setting+ RBRACKET         # sequence_literal
+    : DOLLARS identifier         # sequence_reference
+    | LBRACKET setting+ RBRACKET # sequence_literal
     ;
