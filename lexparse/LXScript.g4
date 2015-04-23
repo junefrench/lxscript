@@ -64,6 +64,7 @@ system
 
 setting
     : BANG identifier        # setting_reference
+    | system AT setting      # setting_partial_reference
     | system AT level        # setting_literal
     | LBRACE setting+ RBRACE # setting_compound
     ;

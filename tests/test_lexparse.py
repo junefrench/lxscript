@@ -84,6 +84,37 @@ class ParserTest(unittest.TestCase):
             ])
         )
 
+    def test_system_reference(self):
+        self._parse_expect(
+            "1 = 2",
+            ('lxscript', [
+                ('declaration', [
+                    ('identifier', ['NUMBER']),
+                    'EQUALS',
+                    ('system', [('identifier', ['NUMBER'])])
+                ]),
+                'EOF'
+            ])
+        )
+
+    def test_system_compound(self):
+        self._parse_expect(
+            "1 = {2 3}",
+            ('lxscript', [
+                ('declaration', [
+                    ('identifier', ['NUMBER']),
+                    'EQUALS',
+                    ('system', [
+                        'LBRACE',
+                        ('system', [('identifier', ['NUMBER'])]),
+                        ('system', [('identifier', ['NUMBER'])]),
+                        'RBRACE'
+                    ])
+                ]),
+                'EOF'
+            ])
+        )
+
     def test_setting_literal_and_identifier(self):
         self._parse_expect(
             "foo1 @ 50",
@@ -119,7 +150,7 @@ class ParserTest(unittest.TestCase):
             ])
         )
 
-    def test_compound_setting(self):
+    def test_setting_compound(self):
         self._parse_expect(
             """
             {
@@ -152,6 +183,19 @@ class ParserTest(unittest.TestCase):
             ])
         )
 
+    def test_setting_partial_reference(self):
+        self._parse_expect(
+            "1 @ !foo",
+            ('lxscript', [
+                ('setting', [
+                    ('system', [('identifier', ['NUMBER'])]),
+                    'AT',
+                    ('setting', ['BANG', ('identifier', ['NAME'])])
+                ]),
+                'EOF'
+            ])
+        )
+
     def test_sequence_literal_and_declaration(self):
         self._parse_expect(
             "$1 = [!1 !2]",
@@ -169,6 +213,231 @@ class ParserTest(unittest.TestCase):
                 ]),
                 'EOF'
             ])
+        )
+
+    def test_complex_example(self):
+        self._parse_expect(
+            """
+            # Systems
+            1 = @@1 ## system 1 is a dimmer at address 1
+            2 = @@2
+            3 = @@3
+            top1 = @@51
+            top2 = @@52
+            top3 = @@53
+            house = {@@51 @@52 @@53 @@54} # system house includes four different dimmers
+
+            front = {1 2 3} # system front is a group including systems 1, 2, and 3
+            top = {top1 top2 top3}
+
+            !blackout = {
+                # setting blackout is all channels out
+                front @ out
+                top @ out
+                house @ out
+            }
+
+            !spot_sl = {
+                # a setting for a certain look (a spotlight stage left)
+                front @ out
+                top @ out
+                # later settings override earlier ones, so this overrides the setting of 1 to out in 'front @ out'
+                1 @ full
+            }
+            $main = [
+                # A simple cue list
+                !blackout
+                !spot_sl
+                {
+                    front @ full
+                    top @ 50
+                }
+                front @ !blackout # recall just system front from setting blackout
+                !blackout
+            ]
+
+            $check = [
+                # This would bring on fixtures to 10% one at a time for dimmer check
+                {!blackout 1 @ 10}
+                {!blackout 2 @ 10}
+                {!blackout 3 @ 10}
+                {!blackout top1 @ 10}
+                {!blackout top2 @ 10}
+                {!blackout top3 @ 10}
+            ]
+            """,
+            ('lxscript',
+             [('declaration',
+               [('identifier', ['NUMBER']),
+                'EQUALS',
+                ('system', ['AT', 'AT', 'NUMBER'])]),
+              ('declaration',
+               [('identifier', ['NUMBER']),
+                'EQUALS',
+                ('system', ['AT', 'AT', 'NUMBER'])]),
+              ('declaration',
+               [('identifier', ['NUMBER']),
+                'EQUALS',
+                ('system', ['AT', 'AT', 'NUMBER'])]),
+              ('declaration',
+               [('identifier', ['NAME', 'NUMBER']),
+                'EQUALS',
+                ('system', ['AT', 'AT', 'NUMBER'])]),
+              ('declaration',
+               [('identifier', ['NAME', 'NUMBER']),
+                'EQUALS',
+                ('system', ['AT', 'AT', 'NUMBER'])]),
+              ('declaration',
+               [('identifier', ['NAME', 'NUMBER']),
+                'EQUALS',
+                ('system', ['AT', 'AT', 'NUMBER'])]),
+              ('declaration',
+               [('identifier', ['NAME']),
+                'EQUALS',
+                ('system',
+                 ['LBRACE',
+                  ('system', ['AT', 'AT', 'NUMBER']),
+                  ('system', ['AT', 'AT', 'NUMBER']),
+                  ('system', ['AT', 'AT', 'NUMBER']),
+                  ('system', ['AT', 'AT', 'NUMBER']),
+                  'RBRACE'])]),
+              ('declaration',
+               [('identifier', ['NAME']),
+                'EQUALS',
+                ('system',
+                 ['LBRACE',
+                  ('system', [('identifier', ['NUMBER'])]),
+                  ('system', [('identifier', ['NUMBER'])]),
+                  ('system', [('identifier', ['NUMBER'])]),
+                  'RBRACE'])]),
+              ('declaration',
+               [('identifier', ['NAME']),
+                'EQUALS',
+                ('system',
+                 ['LBRACE',
+                  ('system', [('identifier', ['NAME', 'NUMBER'])]),
+                  ('system', [('identifier', ['NAME', 'NUMBER'])]),
+                  ('system', [('identifier', ['NAME', 'NUMBER'])]),
+                  'RBRACE'])]),
+              ('declaration',
+               ['BANG',
+                ('identifier', ['NAME']),
+                'EQUALS',
+                ('setting',
+                 ['LBRACE',
+                  ('setting',
+                   [('system', [('identifier', ['NAME'])]),
+                    'AT',
+                    ('level', ['OUT'])]),
+                  ('setting',
+                   [('system', [('identifier', ['NAME'])]),
+                    'AT',
+                    ('level', ['OUT'])]),
+                  ('setting',
+                   [('system', [('identifier', ['NAME'])]),
+                    'AT',
+                    ('level', ['OUT'])]),
+                  'RBRACE'])]),
+              ('declaration',
+               ['BANG',
+                ('identifier', ['NAME']),
+                'EQUALS',
+                ('setting',
+                 ['LBRACE',
+                  ('setting',
+                   [('system', [('identifier', ['NAME'])]),
+                    'AT',
+                    ('level', ['OUT'])]),
+                  ('setting',
+                   [('system', [('identifier', ['NAME'])]),
+                    'AT',
+                    ('level', ['OUT'])]),
+                  ('setting',
+                   [('system', [('identifier', ['NUMBER'])]),
+                    'AT',
+                    ('level', ['FULL'])]),
+                  'RBRACE'])]),
+              ('declaration',
+               ['DOLLARS',
+                ('identifier', ['NAME']),
+                'EQUALS',
+                ('sequence',
+                 ['LBRACKET',
+                  ('setting', ['BANG', ('identifier', ['NAME'])]),
+                  ('setting', ['BANG', ('identifier', ['NAME'])]),
+                  ('setting',
+                   ['LBRACE',
+                    ('setting',
+                     [('system', [('identifier', ['NAME'])]),
+                      'AT',
+                      ('level', ['FULL'])]),
+                    ('setting',
+                     [('system', [('identifier', ['NAME'])]),
+                      'AT',
+                      ('level', ['NUMBER'])]),
+                    'RBRACE']),
+                  ('setting',
+                   [('system', [('identifier', ['NAME'])]),
+                    'AT',
+                    ('setting', ['BANG', ('identifier', ['NAME'])])]),
+                  ('setting', ['BANG', ('identifier', ['NAME'])]),
+                  'RBRACKET'])]),
+              ('declaration',
+               ['DOLLARS',
+                ('identifier', ['NAME']),
+                'EQUALS',
+                ('sequence',
+                 ['LBRACKET',
+                  ('setting',
+                   ['LBRACE',
+                    ('setting', ['BANG', ('identifier', ['NAME'])]),
+                    ('setting',
+                     [('system', [('identifier', ['NUMBER'])]),
+                      'AT',
+                      ('level', ['NUMBER'])]),
+                    'RBRACE']),
+                  ('setting',
+                   ['LBRACE',
+                    ('setting', ['BANG', ('identifier', ['NAME'])]),
+                    ('setting',
+                     [('system', [('identifier', ['NUMBER'])]),
+                      'AT',
+                      ('level', ['NUMBER'])]),
+                    'RBRACE']),
+                  ('setting',
+                   ['LBRACE',
+                    ('setting', ['BANG', ('identifier', ['NAME'])]),
+                    ('setting',
+                     [('system', [('identifier', ['NUMBER'])]),
+                      'AT',
+                      ('level', ['NUMBER'])]),
+                    'RBRACE']),
+                  ('setting',
+                   ['LBRACE',
+                    ('setting', ['BANG', ('identifier', ['NAME'])]),
+                    ('setting',
+                     [('system', [('identifier', ['NAME', 'NUMBER'])]),
+                      'AT',
+                      ('level', ['NUMBER'])]),
+                    'RBRACE']),
+                  ('setting',
+                   ['LBRACE',
+                    ('setting', ['BANG', ('identifier', ['NAME'])]),
+                    ('setting',
+                     [('system', [('identifier', ['NAME', 'NUMBER'])]),
+                      'AT',
+                      ('level', ['NUMBER'])]),
+                    'RBRACE']),
+                  ('setting',
+                   ['LBRACE',
+                    ('setting', ['BANG', ('identifier', ['NAME'])]),
+                    ('setting',
+                     [('system', [('identifier', ['NAME', 'NUMBER'])]),
+                      'AT',
+                      ('level', ['NUMBER'])]),
+                    'RBRACE']),
+                  'RBRACKET'])]),
+              'EOF'])
         )
 
     def _parse_expect(self, code, expected_tree):
