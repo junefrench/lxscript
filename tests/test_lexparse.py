@@ -1,5 +1,7 @@
 import unittest
 
+from lexparse import *
+
 
 class LexerTest(unittest.TestCase):
     def test_number(self):
@@ -43,6 +45,10 @@ class LexerTest(unittest.TestCase):
             'OUT'
         ])
 
+    def test_invalid_character(self):
+        with self.assertRaises(LexError):
+            self._lex_expect("+", None)
+
     def _lex_expect(self, code, expected_tokens):
         """
         Run some code through the lexer and check the tokens it returns.
@@ -52,7 +58,6 @@ class LexerTest(unittest.TestCase):
         :return: Does not return a value, but asserts that the output of the lexer matches the expected output.
         """
         from antlr4.InputStream import InputStream
-        from lexparse import LXScriptLexer
         import itertools
 
         lexer = LXScriptLexer(InputStream(code))
@@ -65,7 +70,6 @@ class LexerTest(unittest.TestCase):
 
     def _name(self, rule):
         """Get the name of a lexer rule from its index"""
-        from lexparse import LXScriptLexer
 
         return LXScriptLexer.symbolicNames[rule]
 
@@ -440,6 +444,10 @@ class ParserTest(unittest.TestCase):
               'EOF'])
         )
 
+    def test_invalid_declaration(self):
+        with self.assertRaises(ParseError):
+            self._parse_expect("foo = !bar", None)
+
     def _parse_expect(self, code, expected_tree):
         """
         Parse some code and check the resulting parse tree against the expected tree.
@@ -454,7 +462,6 @@ class ParserTest(unittest.TestCase):
         from antlr4 import TerminalNode
         from antlr4.InputStream import InputStream
         from antlr4.CommonTokenStream import CommonTokenStream
-        from lexparse import LXScriptLexer, LXScriptParser
 
         lexer = LXScriptLexer(InputStream(code))
         parser = LXScriptParser(CommonTokenStream(lexer))
@@ -475,7 +482,6 @@ class ParserTest(unittest.TestCase):
 
     def _name(self, rule, symbolic=False):
         """Get the name of a parser rule (or of a terminal, if symbolic is True) from its rule index"""
-        from lexparse import LXScriptParser
 
         if symbolic and (rule == -1):
             return 'EOF'
