@@ -1,7 +1,5 @@
 from unittest import TestCase
 
-from lexparse import *
-
 
 class LexerTest(TestCase):
     def test_number(self):
