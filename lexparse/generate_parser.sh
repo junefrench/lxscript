@@ -1,2 +1,2 @@
 #!/bin/sh
-antlr4 -Dlanguage=Python3 -no-listener -no-visitor LXScript.g4
+antlr4 -Dlanguage=Python3 -no-listener -no-visitor LXScript.g4 -o _gen

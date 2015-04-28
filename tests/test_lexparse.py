@@ -1,5 +1,9 @@
 from unittest import TestCase
 
+from lexparse.lexer import *
+from lexparse.parser import *
+from lexparse.error import *
+
 
 class LexerTest(TestCase):
     def test_number(self):
@@ -58,7 +62,7 @@ class LexerTest(TestCase):
         from antlr4.InputStream import InputStream
         import itertools
 
-        lexer = LXScriptLexer(InputStream(code))
+        lexer = Lexer(InputStream(code))
         actual_tokens = [
             (self._name(actual.type), actual.text) if type(expected) is tuple else self._name(actual.type)
             for expected, actual in itertools.zip_longest(expected_tokens, lexer.getAllTokens())
@@ -69,7 +73,7 @@ class LexerTest(TestCase):
     def _name(self, rule):
         """Get the name of a lexer rule from its index"""
 
-        return LXScriptLexer.symbolicNames[rule]
+        return Lexer.symbolicNames[rule]
 
 
 class ParserTest(TestCase):
@@ -461,8 +465,8 @@ class ParserTest(TestCase):
         from antlr4.InputStream import InputStream
         from antlr4.CommonTokenStream import CommonTokenStream
 
-        lexer = LXScriptLexer(InputStream(code))
-        parser = LXScriptParser(CommonTokenStream(lexer))
+        lexer = Lexer(InputStream(code))
+        parser = Parser(CommonTokenStream(lexer))
 
         def type_tree(parse_tree):
             """Converts a parse tree to the format used to specify expected parse trees, as described above"""
@@ -484,4 +488,4 @@ class ParserTest(TestCase):
         if symbolic and (rule == -1):
             return 'EOF'
         else:
-            return (LXScriptParser.symbolicNames if symbolic else LXScriptParser.ruleNames)[rule]
+            return (Parser.symbolicNames if symbolic else Parser.ruleNames)[rule]
