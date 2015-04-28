@@ -1,9 +1,9 @@
-import unittest
+from unittest import TestCase
 
 from lexparse import *
 
 
-class LexerTest(unittest.TestCase):
+class LexerTest(TestCase):
     def test_number(self):
         self._lex_expect("42", [('NUMBER', '42')])
 
@@ -74,7 +74,7 @@ class LexerTest(unittest.TestCase):
         return LXScriptLexer.symbolicNames[rule]
 
 
-class ParserTest(unittest.TestCase):
+class ParserTest(TestCase):
     def test_system_literal_and_declaration(self):
         self._parse_expect(
             "1 = @@1",

@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from util import timer
+from util.timer import *
 
 
 class TimerTest(TestCase):
@@ -12,7 +12,7 @@ class TimerTest(TestCase):
         def increment(by, negative=False):
             self._counter += (-by if negative else by)
 
-        t = timer.PeriodicTimer(0.05, increment, [1], {'negative': True})
+        t = PeriodicTimer(0.05, increment, [1], {'negative': True})
         t.start()
 
         time.sleep(0.225)
