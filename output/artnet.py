@@ -1,14 +1,12 @@
 from socket import *
 import struct
 
-from util.timer import PeriodicTimer
-
 
 class ArtNetOutput:
-    def __init__(self, universe=0, period=0.05, address='<broadcast>', port=6454):
-        self._universe = universe
+    def __init__(self, start_address, universe=0, address='<broadcast>', port=6454):
+        self._start_address = start_address
 
-        self._timer = PeriodicTimer(period, self._output)
+        self._universe = universe
 
         self._socket = socket(AF_INET, SOCK_DGRAM)
         self._socket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
@@ -17,18 +15,22 @@ class ArtNetOutput:
 
         self._sequence = 0
 
-    def output(self):
+    @staticmethod
+    def address_count():
+        return 512
+
+    def range(self):
+        return range(
+            self._start_address,
+            self._start_address + self.address_count()
+        )
+
+    def output(self, data):
+        self._socket.sendto(self._pack(data), self._address)
         self._sequence += 1
         self._sequence %= 1 << 8
-        self._socket.sendto(self._pack(), self._address)
 
-    def enable(self):
-        self._timer.start()
-
-    def disable(self):
-        self._timer.cancel()
-
-    def _pack(self):
+    def _pack(self, data):
         """Pack the current output data into an ArtDMX packet"""
         # Oh god Art-Net is horrible and keeps switching endianness
         return b'Art-Net\0' + \
@@ -38,4 +40,4 @@ class ArtNetOutput:
                bytes([0]) + \
                struct.pack('<H', self._universe) + \
                struct.pack('>H', 512) + \
-               bytes([level for level in self._data])
+               bytes([int(data[i] * 255) for i in self.range()])
