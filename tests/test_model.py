@@ -6,22 +6,20 @@ from model.system import *
 
 class SystemTest(TestCase):
     def test_output_system(self):
-        output_function = Mock()
-        s = OutputSystem(output_function)
+        output = Mock()
+        s = OutputSystem(output)
         s.set_level(0.5)
-        output_function.assert_called_once_with(0.5)
+        output.set_level.assert_called_once_with(0.5)
 
     def test_compound_system(self):
-        of1 = Mock()
-        of2 = Mock()
-        of3 = Mock()
+        outputs = [Mock(), Mock(), Mock()]
         cs = CompoundSystem([
-            OutputSystem(of1),
+            OutputSystem(outputs[0]),
             CompoundSystem([
-                OutputSystem(of2),
-                OutputSystem(of3)
+                OutputSystem(outputs[1]),
+                OutputSystem(outputs[2])
             ])
         ])
         cs.set_level(0.25)
-        for of in [of1, of2, of3]:
-            of.assert_called_once_with(0.25)
+        for output in outputs:
+            output.set_level.assert_called_once_with(0.25)

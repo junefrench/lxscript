@@ -1,9 +1,9 @@
 class OutputSystem:
-    def __init__(self, output_function):
-        self._output_function = output_function
+    def __init__(self, output):
+        self._output = output
 
     def set_level(self, level):
-        self._output_function(level)
+        self._output.set_level(level)
 
 
 class CompoundSystem:
