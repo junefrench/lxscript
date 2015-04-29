@@ -1,7 +1,7 @@
 from unittest import TestCase
 from unittest.mock import Mock
 
-from ports.artnet import *
+from ports.art_net import *
 
 
 class ArtNetTest(TestCase):
@@ -27,4 +27,3 @@ class ArtNetTest(TestCase):
         print(expected)
 
         self.assertEqual(buffer, expected)
-
