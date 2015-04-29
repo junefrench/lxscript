@@ -3,6 +3,8 @@ import struct
 
 
 class ArtNetPort:
+    """A port which sends data from an output out over DMX"""
+
     def __init__(self, output, start_address, universe=0, address='<broadcast>', port=6454):
         self._output = output
         self._start_address = start_address

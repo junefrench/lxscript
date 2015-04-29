@@ -15,8 +15,12 @@ class _AntlrError(Exception):
 
 
 class LexError(_AntlrError):
+    """An exception indicating an error occurred in lexing some LXScript"""
+
     pass
 
 
 class ParseError(_AntlrError):
+    """An exception indicating an error occurred in parsing some LXScript"""
+
     pass
