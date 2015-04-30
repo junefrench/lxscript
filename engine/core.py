@@ -1,21 +1,29 @@
 from model.output import Output
-from model.system import OutputSystem, CompoundSystem
 from ports.art_net import ArtNetPort
+from util.timer import PeriodicTimer
 
 
-class Engine():
-    """The core object of an LXScript engine instance. Holds all data."""
+class Instance():
+    """The core object of an LXScript engine instance.
+    Holds all data and deals with periodically sending output data on ports.
+    """
 
     def __init__(self):
+        # Dictionaries of show data
         self.systems = {}
+        self.settings = {}
+
+        # Set up output, ports, and start outputting
         self.output = Output()
         self.ports = {ArtNetPort(self.output, 1)}
+        self._timer = PeriodicTimer(0.05, self._tick)
 
-    def add_system(self, name, addresses=[], names=[]):
-        systems = [OutputSystem(a, self.output) for a in addresses] + [self.systems[n] for n in names]
-        if len(systems) == 1:
-            self.systems[name] = systems[0]
-        elif len(systems) > 1:
-            self.systems[name] = CompoundSystem(systems)
-        else:
-            raise ValueError("empty system")
+    def _tick(self):
+        for port in self.ports:
+            port.send()
+
+    def run(self):
+        self._timer.start()
+
+    def stop(self):
+        self._timer.cancel()
