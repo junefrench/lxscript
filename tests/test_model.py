@@ -23,3 +23,5 @@ class SystemTest(TestCase):
         cs.set_level(0.25)
         for output in outputs:
             output.set_level.assert_called_once_with(1, 0.25)
+
+# TODO add test case for output
