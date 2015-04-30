@@ -40,7 +40,7 @@ lxscript
     ;
 
 action
-    : setting
+    : setting # action_setting
     ;
 
 declaration

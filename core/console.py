@@ -1,4 +1,5 @@
 import cmd
+import traceback
 
 import lexparse.error
 from core import interpreter
@@ -21,5 +22,8 @@ class Console(cmd.Cmd):
             interpreter.Interpreter(self.engine).run(line)
         except (lexparse.error.LexError, lexparse.error.ParseError):
             print("Syntax Error")
-        except Exception:
-            print("Other Error")
+        except NotImplementedError:
+            print("Not Implemented (yet)")
+        except Exception as e:
+            print("Error: " + str(e))
+            print(traceback.format_exc())
