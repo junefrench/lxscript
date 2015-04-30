@@ -2,3 +2,4 @@ LXScript.tokens
 LXScriptLexer.py
 LXScriptLexer.tokens
 LXScriptParser.py
+LXScriptVisitor.py
