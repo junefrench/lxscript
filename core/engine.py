@@ -1,6 +1,6 @@
-from model.output import Output
-from ports.art_net import ArtNetPort
-from util.timer import PeriodicTimer
+from model import output
+from ports import art_net
+from util import timer
 
 
 class Engine():
@@ -14,9 +14,9 @@ class Engine():
         self.settings = {}
 
         # Set up output, ports, and start outputting
-        self.output = Output()
-        self.ports = {ArtNetPort(self.output, 1)}
-        self._timer = PeriodicTimer(0.05, self._tick)
+        self.output = output.Output()
+        self.ports = {art_net.ArtNetPort(self.output, 1)}
+        self._timer = timer.PeriodicTimer(0.05, self._tick)
 
     def _tick(self):
         for port in self.ports:

@@ -1,19 +1,25 @@
-from cmd import Cmd
-from core.interpreter import Interpreter
-from .engine import Engine
-from lexparse.lexer import Lexer
-from lexparse.parser import Parser
+import cmd
+
+import lexparse.error
+from core import interpreter
+from . import engine
 
 
-class Console(Cmd):
+class Console(cmd.Cmd):
     """A console repl for the lxscript language.
     Processes commands and applies them to an lxscript engine.
     """
 
-    def __init__(self, engine=Engine()):
+    def __init__(self, engine=engine.Engine()):
         super(Console, self).__init__()
         self.engine = engine
+        self.engine.run()
         self.prompt = '(lxscript) > '
 
     def default(self, line):
-        Interpreter(self.engine).run(line)
+        try:
+            interpreter.Interpreter(self.engine).run(line)
+        except (lexparse.error.LexError, lexparse.error.ParseError):
+            print("Syntax Error")
+        except Exception:
+            print("Other Error")
