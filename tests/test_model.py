@@ -25,3 +25,5 @@ class SystemTest(TestCase):
             output.set_level.assert_called_once_with(1, 0.25)
 
 # TODO add test case for output
+
+# TODO add test case for settings
