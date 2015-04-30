@@ -124,12 +124,14 @@ class ParserTest(TestCase):
         self._parse_expect(
             "foo1 @ 50",
             ('lxscript', [
-                ('setting', [
-                    ('system', [
-                        ('identifier', ['NAME', 'NUMBER'])
-                    ]),
-                    'AT',
-                    ('level', ['NUMBER'])
+                ('action', [
+                    ('setting', [
+                        ('system', [
+                            ('identifier', ['NAME', 'NUMBER'])
+                        ]),
+                        'AT',
+                        ('level', ['NUMBER'])
+                    ])
                 ]),
                 'EOF'
             ])
@@ -165,24 +167,26 @@ class ParserTest(TestCase):
             }
             """,
             ('lxscript', [
-                ('setting', [
-                    'LBRACE',
+                ('action', [
                     ('setting', [
-                        ('system', [('identifier', ['NUMBER'])]),
-                        'AT',
-                        ('level', ['FULL'])
-                    ]),
-                    ('setting', [
-                        ('system', [('identifier', ['NAME'])]),
-                        'AT',
-                        ('level', ['OUT'])
-                    ]),
-                    ('setting', [
-                        ('system', [('identifier', ['NAME', 'NUMBER'])]),
-                        'AT',
-                        ('level', ['NUMBER'])
-                    ]),
-                    'RBRACE'
+                        'LBRACE',
+                        ('setting', [
+                            ('system', [('identifier', ['NUMBER'])]),
+                            'AT',
+                            ('level', ['FULL'])
+                        ]),
+                        ('setting', [
+                            ('system', [('identifier', ['NAME'])]),
+                            'AT',
+                            ('level', ['OUT'])
+                        ]),
+                        ('setting', [
+                            ('system', [('identifier', ['NAME', 'NUMBER'])]),
+                            'AT',
+                            ('level', ['NUMBER'])
+                        ]),
+                        'RBRACE'
+                    ])
                 ]),
                 'EOF'
             ])
@@ -192,10 +196,12 @@ class ParserTest(TestCase):
         self._parse_expect(
             "1 @ !foo",
             ('lxscript', [
-                ('setting', [
-                    ('system', [('identifier', ['NUMBER'])]),
-                    'AT',
-                    ('setting', ['BANG', ('identifier', ['NAME'])])
+                ('action', [
+                    ('setting', [
+                        ('system', [('identifier', ['NUMBER'])]),
+                        'AT',
+                        ('setting', ['BANG', ('identifier', ['NAME'])])
+                    ])
                 ]),
                 'EOF'
             ])

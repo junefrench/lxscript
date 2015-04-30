@@ -36,7 +36,11 @@ WHITESPACE
 // Parser
 
 lxscript
-    : (declaration | setting)+ EOF
+    : (declaration | action)+ EOF
+    ;
+
+action
+    : setting
     ;
 
 declaration
