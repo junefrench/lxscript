@@ -3,7 +3,7 @@ from ports.art_net import ArtNetPort
 from util.timer import PeriodicTimer
 
 
-class Instance():
+class Engine():
     """The core object of an LXScript engine instance.
     Holds all data and deals with periodically sending output data on ports.
     """
