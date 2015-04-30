@@ -14,12 +14,17 @@ class Parser(LXScriptParser.LXScriptParser):
         self._listeners = [error._ExceptionErrorListener(error.ParseError)]
 
 
+_VISIT_REGEX = re.compile(r'^visit([A-Z])(.*)$')
+
+
 class Visitor(LXScriptVisitor.LXScriptVisitor):
     """A visitor for LXScript parse trees"""
-    _visit_regex = re.compile(r'^visit_([a-z])(.*)$')
 
-    def __getattr__(self, name):
+    def __getattribute__(self, name):
         # Patch the visitor so that visit_foo works as an alias for visitFoo
-        match = self._visit_regex.match(name)
-        new_name = 'visit{0}{1}'.format(match.group(1).upper(), match.group(2))
-        return getattr(self, new_name)
+        match = _VISIT_REGEX.match(name)
+        if match is not None:
+            new_name = 'visit_{0}{1}'.format(match.group(1).lower(), match.group(2))
+            if hasattr(self, new_name):
+                return getattr(self, new_name)
+        return object.__getattribute__(self, name)
