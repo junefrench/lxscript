@@ -1,5 +1,8 @@
 from cmd import Cmd
+from core.interpreter import Interpreter
 from .engine import Engine
+from lexparse.lexer import Lexer
+from lexparse.parser import Parser
 
 
 class Console(Cmd):
@@ -10,6 +13,7 @@ class Console(Cmd):
     def __init__(self, engine=Engine()):
         super(Console, self).__init__()
         self.engine = engine
+        self.prompt = '(lxscript) > '
 
     def default(self, line):
-        print("Nothing doing")
+        Interpreter(self.engine).run(line)
