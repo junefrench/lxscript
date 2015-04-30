@@ -59,10 +59,9 @@ class LexerTest(TestCase):
             constants and token texts, with one item for each token expected in the lexer output from lexing the code.
         :return: Does not return a value, but asserts that the output of the lexer matches the expected output.
         """
-        from antlr4.InputStream import InputStream
         import itertools
 
-        lexer = Lexer(InputStream(code))
+        lexer = Lexer(code)
         actual_tokens = [
             (self._name(actual.type), actual.text) if type(expected) is tuple else self._name(actual.type)
             for expected, actual in itertools.zip_longest(expected_tokens, lexer.getAllTokens())
@@ -462,11 +461,9 @@ class ParserTest(TestCase):
         one specified by expected_tree.
         """
         from antlr4 import TerminalNode
-        from antlr4.InputStream import InputStream
-        from antlr4.CommonTokenStream import CommonTokenStream
 
-        lexer = Lexer(InputStream(code))
-        parser = Parser(CommonTokenStream(lexer))
+        lexer = Lexer(code)
+        parser = Parser(lexer)
 
         def type_tree(parse_tree):
             """Converts a parse tree to the format used to specify expected parse trees, as described above"""
