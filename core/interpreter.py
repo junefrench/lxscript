@@ -30,7 +30,9 @@ class _Visitor(parser.Visitor):
         self.engine.systems[name] = system
 
     def visit_declaration_setting(self, node):
-        raise NotImplementedError
+        name = self.visit(node.identifier())
+        setting = self.visit(node.setting())
+        self.engine.settings[name] = setting
 
     def visit_declaration_sequence(self, node):
         raise NotImplementedError
@@ -60,9 +62,14 @@ class _Visitor(parser.Visitor):
         return system.OutputSystem(address, self.engine.output)
 
     def visit_system_compound(self, node):
-        raise NotImplementedError
+        subsystems = [self.visit(s) for s in node.system()]
+        return system.CompoundSystem(subsystems)
 
-    def visit_setting_reference(self, ctx):
+    def visit_setting_reference(self, node):
+        name = self.visit(node.identifier())
+        return self.engine.settings[name]
+
+    def visit_setting_partial_reference(self, node):
         raise NotImplementedError
 
     def visit_setting_literal(self, node):
@@ -71,7 +78,8 @@ class _Visitor(parser.Visitor):
         return setting.LevelSetting(system, level)
 
     def visit_setting_compound(self, node):
-        raise NotImplementedError
+        subsettings = [self.visit(s) for s in node.setting()]
+        return setting.CompoundSetting(subsettings)
 
     def visit_sequence_reference(self, node):
         raise NotImplementedError
