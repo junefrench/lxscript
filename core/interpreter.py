@@ -92,7 +92,7 @@ class _Visitor(parser.Visitor):
 
     def visit_sequence_reference(self, node):
         name = self.visit(node.identifier())
-        return self.engine.settings[name]
+        return self.engine.sequences[name]
 
     def visit_sequence_literal(self, node):
         return [self.visit(s) for s in node.setting()]

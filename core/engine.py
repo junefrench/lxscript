@@ -13,7 +13,7 @@ class Engine():
         self.systems = {}
         self.settings = {}
         self.sequences = {}
-        self._playback = None
+        self._playback = iter([])
 
         # Set up output, ports, and start outputting
         self.output = output.Output()
@@ -34,4 +34,11 @@ class Engine():
         self._playback = iter(sequence)
 
     def go(self):
-        next(self._playback).apply()
+        try:
+            next(self._playback).apply()
+        except StopIteration:
+            raise NoActiveSequence
+
+
+class NoActiveSequence(Exception):
+    pass

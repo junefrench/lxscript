@@ -24,6 +24,8 @@ class Console(cmd.Cmd):
             print("Syntax Error")
         except NotImplementedError:
             print("Not Implemented (yet)")
+        except engine.NoActiveSequence:
+            print("No active sequence (load one with 'load $sequence')")
         except Exception as e:
             print("Error: " + str(e))
             print(traceback.format_exc())
