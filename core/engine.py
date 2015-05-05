@@ -8,7 +8,7 @@ class Engine():
     Holds all data and deals with periodically sending output data on ports.
     """
 
-    def __init__(self):
+    def __init__(self, ports=[art_net.ArtNetPort(1)]):
         # Dictionaries of show data
         self.systems = {}
         self.settings = {}
@@ -17,12 +17,12 @@ class Engine():
 
         # Set up output, ports, and start outputting
         self.output = output.Output()
-        self.ports = {art_net.ArtNetPort(self.output, 1)}
+        self.ports = set(ports)
         self._timer = timer.PeriodicTimer(0.05, self._tick)
 
     def _tick(self):
         for port in self.ports:
-            port.send()
+            port.send(self.output)
 
     def run(self):
         self._timer.start()

@@ -16,9 +16,9 @@ class ArtNetTest(TestCase):
 
         output = Mock()
         output.get_level = get_level
-        port = ArtNetPort(output, 1, universe=42)
+        port = ArtNetPort(1, universe=42)
 
-        buffer = port._pack()
+        buffer = port._pack(output)
         expected = (
             b'Art-Net\0\x00\x50\x00\x0e\x00\x00\x2a\x00\x02\x00'
             b'\x3f' + bytes(6) + b'\x7f' + bytes(503) + b'\xff'

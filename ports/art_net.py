@@ -5,8 +5,7 @@ import struct
 class ArtNetPort:
     """A port which sends data from an output out over DMX"""
 
-    def __init__(self, output, start_address, universe=0, address='<broadcast>', port=6454):
-        self._output = output
+    def __init__(self, start_address, universe=0, address='<broadcast>', port=6454):
         self._start_address = start_address
 
         self._universe = universe
@@ -28,12 +27,12 @@ class ArtNetPort:
             self._start_address + self.address_count()
         )
 
-    def send(self):
-        self._socket.sendto(self._pack(), self._address)
+    def send(self, output):
+        self._socket.sendto(self._pack(output), self._address)
         self._sequence += 1
         self._sequence %= 1 << 8
 
-    def _pack(self):
+    def _pack(self, output):
         """Pack the current output data into an ArtDMX packet"""
         # Oh god Art-Net is horrible and keeps switching endianness
         return b'Art-Net\0' + \
@@ -43,4 +42,4 @@ class ArtNetPort:
                bytes([0]) + \
                struct.pack('<H', self._universe) + \
                struct.pack('>H', 512) + \
-               bytes([int(self._output.get_level(i) * 255) for i in self.range()])
+               bytes([int(output.get_level(i) * 255) for i in self.range()])
