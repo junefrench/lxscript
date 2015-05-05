@@ -42,7 +42,9 @@ class _Visitor(parser.Visitor):
         self.engine.settings[name] = setting
 
     def visit_declaration_sequence(self, node):
-        raise NotImplementedError
+        name = self.visit(node.identifier())
+        sequence = self.visit(node.sequence())
+        self.engine.sequences[name] = sequence
 
     def visit_identifier(self, node):
         name = self.visit(node.NAME()) if node.NAME() else None

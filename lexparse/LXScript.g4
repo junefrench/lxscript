@@ -42,9 +42,9 @@ lxscript
     ;
 
 action
-    : setting      # action_setting
-    | LOAD setting # action_load
-    | GO           # action_go
+    : setting       # action_setting
+    | LOAD sequence # action_load
+    | GO            # action_go
     ;
 
 declaration
