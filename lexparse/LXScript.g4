@@ -7,6 +7,8 @@ LBRACE   : '{';
 RBRACE   : '}';
 LBRACKET : '[';
 RBRACKET : ']';
+GO       : 'go';
+LOAD     : 'load';
 OUT      : 'out';
 FULL     : 'full';
 AT       : '@';
@@ -40,7 +42,9 @@ lxscript
     ;
 
 action
-    : setting # action_setting
+    : setting      # action_setting
+    | LOAD setting # action_load
+    | GO           # action_go
     ;
 
 declaration

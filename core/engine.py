@@ -12,6 +12,8 @@ class Engine():
         # Dictionaries of show data
         self.systems = {}
         self.settings = {}
+        self.sequences = {}
+        self._playback = None
 
         # Set up output, ports, and start outputting
         self.output = output.Output()
@@ -27,3 +29,9 @@ class Engine():
 
     def stop(self):
         self._timer.cancel()
+
+    def load(self, sequence):
+        self._playback = iter(sequence)
+
+    def go(self):
+        next(self._playback).apply()

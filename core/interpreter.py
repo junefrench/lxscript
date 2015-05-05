@@ -13,7 +13,7 @@ class Interpreter():
 
 
 class _Visitor(parser.Visitor):
-    def __init__(self, engine: engine.Engine):
+    def __init__(self, engine):
         self.engine = engine
 
     def visit_lxscript(self, node):
@@ -23,6 +23,13 @@ class _Visitor(parser.Visitor):
     def visit_action_setting(self, node):
         setting = self.visit(node.setting())
         setting.apply()
+
+    def visit_action_load(self, node):
+        sequence = self.visit(node.sequence())
+        self.engine.load(sequence)
+
+    def visit_action_go(self, node):
+        self.engine.go()
 
     def visit_declaration_system(self, node):
         name = self.visit(node.identifier())
@@ -82,10 +89,11 @@ class _Visitor(parser.Visitor):
         return setting.CompoundSetting(subsettings)
 
     def visit_sequence_reference(self, node):
-        raise NotImplementedError
+        name = self.visit(node.identifier())
+        return self.engine.settings[name]
 
     def visit_sequence_literal(self, node):
-        raise NotImplementedError
+        return [self.visit(s) for s in node.setting()]
 
     def visit_terminal(self, node):
         return node.getText()
