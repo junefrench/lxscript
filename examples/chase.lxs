@@ -1,0 +1,48 @@
+# This file defines a simple chase. Load it and then run 'go' repeatedly.
+# Designed to be used with the rig in stage.c2s
+
+1 = @@428
+2 = @@429
+3 = @@430
+4 = @@431
+5 = @@432
+6 = @@433
+
+!1 = {
+    1 @ out
+    2 @ 50
+    3 @ full
+    4 @ 50
+    5 @ out
+    6 @ 50
+}
+
+!2 = {
+    1 @ 50
+    2 @ full
+    3 @ 50
+    4 @ out
+    5 @ 50
+    6 @ full
+}
+
+!3 = {
+    1 @ full
+    2 @ 50
+    3 @ out
+    4 @ 50
+    5 @ full
+    6 @ 50
+}
+
+!4 = {
+    1 @ 50
+    2 @ out
+    3 @ 50
+    4 @ full
+    5 @ 50
+    6 @ out
+}
+
+$1 = [!1 !2 !3 !4 !1 !2 !3 !4 !1 !2 !3 !4]
+load $1

@@ -1,0 +1,51 @@
+# This file defines some useful systems and sets them at some levels.
+# Designed to be used with the rig in stage.c2s
+
+us_top1 = @@428
+us_top2 = @@429
+us_top3 = @@430
+us_top4 = @@431
+us_top5 = @@432
+us_top6 = @@433
+
+us_top = {
+    us_top1
+    us_top2
+    us_top3
+    us_top4
+    us_top5
+    us_top6
+}
+
+ds_top1 = @@434
+ds_top2 = @@435
+ds_top3 = @@436
+ds_top4 = @@437
+ds_top5 = @@438
+ds_top6 = @@439
+
+ds_top = {
+    ds_top1
+    ds_top2
+    ds_top3
+    ds_top4
+    ds_top5
+    ds_top6
+}
+
+top = {us_top ds_top}
+
+front1 = @@425
+front2 = @@426
+front3 = @@427
+
+front = {
+    front1
+    front2
+    front3
+}
+
+front @ 50
+top @ 25
+us_top @ full
+front1 @ full
