@@ -1,6 +1,16 @@
 # lxscript
 Entertainment lighting control language
 
+## Usage
+
+To run lxscript, you first need to generate the lexer and parser with ANTLR. You must have the ANTLR 4.5 tool installed, and then run `lexparse/generate_parser.sh`.
+
+Once this is done, install dependancies with `pip install -r requirements.txt` and run with `./lxscript.py` (`-h` will print usage info).
+
+By default, lxscript will use broadcast ArtNet, which might annoy your friendly local network administrators. To specify an address to send ArtNet to, use the `--address` argument.
+
+You can also give a filename as an argument, and the contents of the file will be executed as lxscript code before enterning the interactive environment. Some example files are in the `examples` directory. The file `stage.c2s` is a [Capture](http://www.capturesweden.com) file which contains the lighting rig used for the examples and is configured to receive ArtNet.
+
 ## Syntax Overview
 
 The basic primitives in lxscript are 'systems', 'settings', and 'sequences'. A system represents any collection of lighting instruments, from a single instrument to an entire rig. The concept of a 'system' includes both the 'channel' and 'group' concepts from more traditional lighting control systems. A setting represents some settings for a specific system. A setting corresponds to a 'palette' or 'preset' on a traditional lighting console. A 'sequence' is a list of settings. This is like a 'chase' or 'cue list' on a traditional console. 
